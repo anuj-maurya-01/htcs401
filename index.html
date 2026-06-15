@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTCS401: AKTU Study Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <!-- Custom Style Variables and Component Overrides -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- MathJax Configuration and Engine -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 transition-colors">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="bg-blue-600 p-1.5 rounded text-white font-bold text-lg">IT</div>
+                <h1 class="text-base font-bold tracking-tight">HTCS401: AKTU Exam Companion</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-xs text-slate-500 font-medium hidden md:block">
+                    Units 1 - 5 • Master Interactive Toolkit
+                </div>
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Toggle Theme">
+                    <span id="theme-toggle-icon">
+                        <!-- Filled by JS -->
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 flex-1 w-full">
+        
+        <!-- Sidebar Controls -->
+        <aside class="w-full md:w-64 space-y-6 flex-shrink-0">
+            <!-- Search bar -->
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 theme-card-shadow">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Search Guide</h4>
+                <div class="relative">
+                    <input id="search-input" type="text" placeholder="Search topics or keys..." class="w-full text-xs p-2.5 pl-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium">
+                </div>
+            </div>
+
+            <!-- Topic Navigation -->
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 theme-card-shadow">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Topic Selector</h3>
+                <nav class="space-y-1" id="topic-nav">
+                    <button onclick="switchTopic('shannon')" class="nav-btn active-tab w-full text-left px-3 py-2 text-xs rounded-md transition-colors">1. Shannon & Entropy</button>
+                    <button onclick="switchTopic('prob')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary">2. Prob. Distributions</button>
+                    <button onclick="switchTopic('hamming')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary">3. Hamming Code (Math)</button>
+                    <button onclick="switchTopic('aes')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary">4. AES Architecture</button>
+                    <button onclick="switchTopic('diffie')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary">5. Diffie-Hellman (Math)</button>
+                    <button onclick="switchTopic('secret')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary">6. Shamir's Scheme</button>
+                    <button onclick="switchTopic('pki')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary">7. PKI & Forensics</button>
+                    <button onclick="switchTopic('quiz')" class="nav-btn w-full text-left px-3 py-2 text-xs rounded-md transition-colors theme-text-secondary border-t border-slate-200 dark:border-slate-800 pt-3 mt-2 font-semibold">8. Practice Quiz</button>
+                </nav>
+            </div>
+            
+            <!-- Syllabus Checkoff Tracker -->
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 theme-card-shadow">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Exam Readiness Tracker</h4>
+                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-2">
+                    <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between items-center text-[10px] font-bold text-slate-500 mb-4">
+                    <span>PROGRESS:</span>
+                    <span id="progress-text">0% Complete</span>
+                </div>
+                <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-shannon" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Shannon communication model</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-entropy" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Entropy H(X) formulas</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-binomial" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Binomial distributions</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-poisson" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Poisson distributions</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-lognormal" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Lognormal losses</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-hamming" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Hamming parity algebra</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-aes" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">AES SPN architectures</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-dh" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Diffie-Hellman modules</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-shamir" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Shamir secret splitting</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-pki" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">PKI components (CA/RA/CRL)</span>
+                    </label>
+                    <label class="flex items-start text-xs space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-forensics" class="checklist-checkbox form-checkbox h-4 w-4 mt-0.5">
+                        <span class="theme-text-secondary">Digital forensic duplicate imaging</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Exam Hack -->
+            <div class="bg-amber-50 dark:bg-amber-950/20 p-4 rounded-xl border border-amber-200 dark:border-amber-900/50">
+                <h4 class="text-amber-800 dark:text-amber-400 font-bold text-xs uppercase mb-2">Exam Hack</h4>
+                <p class="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">For 10 marks, you must fill 4-5 pages. Always start with the definition, draw the diagram, provide a numerical example, and list applications.</p>
+            </div>
+        </aside>
+
+        <!-- Main Display Content -->
+        <main class="flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-10 transition-colors" id="topic-container">
+            
+            <!-- Unit 1: Shannon & Entropy -->
+            <div id="shannon-topic" class="topic-content">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: Shannon's Model</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Definition (2) + Diagram (3) + Component Explanations (3) + Entropy Significance (2)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">Shannon’s Foundation & Information Entropy</h1>
+                
+                <section class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p>Claude Shannon founded Information Theory in 1948, focusing on the reproduction of messages regardless of their meaning. His model is the blueprint for all secure communication channels.</p>
+
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mt-8 mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">The General Communication System</h3>
+                    <div class="diagram-box p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-2 overflow-x-auto">
+                        <div class="flex flex-col items-center bg-blue-50 dark:bg-blue-950/30 p-3 border border-blue-200 dark:border-blue-800 rounded text-xs w-24"><b>Source</b><br>(Message)</div>
+                        <div class="text-slate-400 font-bold px-2">&rarr;</div>
+                        <div class="flex flex-col items-center bg-blue-600 p-3 rounded text-white text-xs w-28"><b>Transmitter</b><br>(Encryption)</div>
+                        <div class="text-slate-400 font-bold px-2">&rarr;</div>
+                        <div class="relative flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 p-4 rounded-full">
+                            <span class="text-xs font-bold">Channel</span>
+                            <div class="absolute -bottom-8 bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900 px-2 py-1 rounded text-[10px] whitespace-nowrap">Noise Source (Attacker)</div>
+                            <div class="absolute -bottom-4 text-red-400">↑</div>
+                        </div>
+                        <div class="text-slate-400 font-bold px-2">&rarr;</div>
+                        <div class="flex flex-col items-center bg-blue-600 p-3 rounded text-white text-xs w-28"><b>Receiver</b><br>(Decryption)</div>
+                        <div class="text-slate-400 font-bold px-2">&rarr;</div>
+                        <div class="flex flex-col items-center bg-blue-50 dark:bg-blue-950/30 p-3 border border-blue-200 dark:border-blue-800 rounded text-xs w-24"><b>Destination</b><br>(User)</div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mt-8 mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">Information Entropy (H)</h3>
+                    <p>Entropy measures the **uncertainty** or unpredictability of a source. In Cyber Security, high entropy is essential for password hashing algorithms and encryption keys.</p>
+                    
+                    <div class="bg-slate-800 dark:bg-slate-950 text-blue-400 p-6 rounded-lg text-center font-mono text-xl my-6">
+                        $$H(X) = - \sum_{i=1}^{n} p(x_i) \log_2 p(x_i)$$
+                    </div>
+                    
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li><b>Password Strength:</b> Higher entropy passwords require exponential brute-force guesses.</li>
+                        <li><b>Intrusion Detection:</b> A sudden spike in network traffic entropy indicates abnormal activity such as a DDoS or malware propagation.</li>
+                    </ul>
+
+                    <!-- Entropy Calculator Widget -->
+                    <div class="mt-8 p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm">
+                        <h3 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">Interactive Entropy Engine</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Input Method</label>
+                                <select id="entropy-input-type" onchange="toggleEntropyInputs()" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                                    <option value="text">Character Frequency from Text</option>
+                                    <option value="probs">Comma-Separated Probabilities</option>
+                                </select>
+                            </div>
+                            <div id="entropy-text-group" class="space-y-1">
+                                <label class="block text-xs font-semibold text-slate-500">Input Text</label>
+                                <textarea id="entropy-text-input" rows="3" placeholder="Type or paste your message here..." class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">AKTU COMPUTER SECURITY EXAM 2026</textarea>
+                            </div>
+                            <div id="entropy-probs-group" class="space-y-1 hidden">
+                                <label class="block text-xs font-semibold text-slate-500">Probabilities (comma-separated, e.g. 0.5, 0.25, 0.25)</label>
+                                <input id="entropy-probs-input" type="text" placeholder="e.g. 0.5, 0.25, 0.125, 0.125" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">
+                            </div>
+                            <button onclick="calculateEntropy()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded text-xs transition-colors">Compute Entropy H(X)</button>
+                            <div id="entropy-output" class="mt-4"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Unit 2: Probability Distributions -->
+            <div id="prob-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: Distributions</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Intro (1) + Discrete Types with Formula (4) + Continuous Types with Examples (4) + Summary Table (1)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">Probability Distributions for Security</h1>
+                <div class="space-y-6 text-slate-600 dark:text-slate-300">
+                    <div class="p-6 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 shadow-sm">
+                        <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">1. Binomial Distribution (Discrete)</h3>
+                        <p class="text-xs text-slate-500 mb-4">Models the number of successes in $n$ independent trials with constant success probability $p$.</p>
+                        <div class="math p-3 rounded block text-center mb-4 text-sm font-semibold">
+                            $$P(X=k) = \binom{n}{k} p^k (1-p)^{n-k}$$
+                        </div>
+                        <p class="text-xs leading-relaxed"><b>Cyber Example:</b> If 100 employees receive a phishing email ($n=100$) and the click-rate is 10% ($p=0.1$), calculate the probability of exactly 5 people clicking.</p>
+                    </div>
+
+                    <div class="p-6 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 shadow-sm">
+                        <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">2. Poisson Distribution (Discrete)</h3>
+                        <p class="text-xs text-slate-500 mb-4">Models events occurring at a constant average rate $\lambda$ in a fixed interval of space or time.</p>
+                        <div class="math p-3 rounded block text-center mb-4 text-sm font-semibold">
+                            $$P(X=k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
+                        </div>
+                        <p class="text-xs leading-relaxed"><b>Cyber Example:</b> Predicting the probability of receiving more than 500 packets per second on a network firewall during a DDoS attack.</p>
+                    </div>
+
+                    <div class="p-6 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 shadow-sm">
+                        <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">3. Lognormal Distribution (Continuous)</h3>
+                        <p class="text-xs text-slate-500 mb-4">Used for variables that are non-negative and highly skewed. Ideal for **Cyber Breach Financial Losses**.</p>
+                        <p class="text-xs leading-relaxed"><b>Cyber Example:</b> Breach costs multiply across layers (Recovery $\times$ Legal Fines $\times$ Customer Churn). Lognormal distribution captures the rare but critical "Mega-Breaches" in its fat tail.</p>
+                    </div>
+
+                    <!-- Distributions Calculator Widget -->
+                    <div class="mt-8 p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm text-slate-800 dark:text-slate-100">
+                        <h3 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">Interactive Probability Distributions Calculator</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Distribution Type</label>
+                                <select id="dist-type" onchange="toggleDistInputs()" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                                    <option value="binomial">Binomial Distribution (Discrete)</option>
+                                    <option value="poisson">Poisson Distribution (Discrete)</option>
+                                </select>
+                            </div>
+                            
+                            <div id="binom-group" class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1">Trials (n)</label>
+                                    <input id="binom-n" type="number" value="10" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1">Prob (p)</label>
+                                    <input id="binom-p" type="number" step="0.01" value="0.1" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1">Successes (k)</label>
+                                    <input id="binom-k" type="number" value="2" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">
+                                </div>
+                            </div>
+
+                            <div id="poiss-group" class="grid grid-cols-2 gap-3 hidden">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1">Average Rate (λ)</label>
+                                    <input id="poiss-lambda" type="number" step="0.1" value="4.0" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1">Actual Events (k)</label>
+                                    <input id="poiss-k" type="number" value="3" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono">
+                                </div>
+                            </div>
+
+                            <button onclick="calculateDistributions()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded text-xs transition-colors">Compute Distribution Probability</button>
+                            <div id="dist-output" class="mt-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 3: Hamming Code (Math) -->
+            <div id="hamming-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: Hamming Code</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Definition (2) + Step-by-Step Algorithm (4) + Full Numerical Example (4)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">Hamming Code Algorithm</h1>
+                
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">The Algorithm Step-by-Step</h3>
+                <div class="space-y-4 text-slate-600 dark:text-slate-300">
+                    <div class="flex items-start"><div class="step-circle">1</div><p class="text-xs mt-0.5"><b>Redundant bits calculation:</b> Find the number of parity bits required using the inequality: $$2^r \ge m + r + 1$$ where $m$ is the data bits length and $r$ is parity bits length.</p></div>
+                    <div class="flex items-start"><div class="step-circle">2</div><p class="text-xs mt-0.5"><b>Placement:</b> Place the redundant parity bits at positions that are powers of 2 (i.e. indices 1, 2, 4, 8...). Fill remaining indices with data bits.</p></div>
+                    <div class="flex items-start"><div class="step-circle">3</div><p class="text-xs mt-0.5"><b>Calculation:</b> Use Even or Odd Parity for covered positions to solve the parity bit values.</p></div>
+                </div>
+
+                <!-- Hamming Calculator Widgets -->
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-800 dark:text-slate-100">
+                    <!-- Encoder -->
+                    <div class="p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm">
+                        <h3 class="text-md font-bold mb-3 text-blue-600 dark:text-blue-400">Hamming (7, 4) Encoder</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">4-Bit Data Word</label>
+                                <input id="hamming-encode-input" type="text" value="1101" maxlength="4" placeholder="e.g. 1101" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <button onclick="runHammingEncoder()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-xs transition-colors">Encode Data Word</button>
+                            <div id="hamming-encode-output"></div>
+                        </div>
+                    </div>
+
+                    <!-- Decoder -->
+                    <div class="p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm">
+                        <h3 class="text-md font-bold mb-3 text-blue-600 dark:text-blue-400">Hamming (7, 4) Decoder & Corrector</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">7-Bit Codeword (introduce an error here)</label>
+                                <input id="hamming-decode-input" type="text" value="1100110" maxlength="7" placeholder="e.g. 1100110" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono tracking-widest text-center focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <button onclick="runHammingDecoder()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-xs transition-colors">Decode & Correct</button>
+                            <div id="hamming-decode-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 4: AES Architecture -->
+            <div id="aes-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: AES Architecture</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Intro (2) + Round Breakdown (4) + Detailed Four Operations (4)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">AES: Advanced Encryption Standard</h1>
+                <p class="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">AES is a symmetric block cipher that processes data blocks of 128 bits. It utilizes a Substitution-Permutation Network (SPN) structure, structuring bytes in a $4 \times 4$ column-major matrix.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-slate-700 dark:text-slate-300">
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
+                        <h4 class="font-bold text-xs uppercase mb-1 text-slate-400">Rounds count</h4>
+                        <ul class="text-xs space-y-1">
+                            <li>AES-128: <b>10 Rounds</b></li>
+                            <li>AES-192: <b>12 Rounds</b></li>
+                            <li>AES-256: <b>14 Rounds</b></li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
+                        <h4 class="font-bold text-xs uppercase mb-1 text-slate-400">The State Block</h4>
+                        <p class="text-[11px] leading-relaxed">Data blocks of 16 bytes are arranged in a 4x4 matrix, enabling parallel byte operations.</p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm">
+                        <h4 class="font-bold text-xs uppercase mb-1 text-slate-400">Keys Schedule</h4>
+                        <p class="text-[11px] leading-relaxed">Original key is expanded into separate subkeys, one for each round (plus initial key addition).</p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">The 4 Transformation Functions</h3>
+                <div class="space-y-3">
+                    <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center">
+                        <div class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold mr-3">1</div>
+                        <div><p class="text-xs font-bold">SubBytes (Confusion)</p><p class="text-[10px] text-slate-400 mt-0.5">Non-linear byte substitution using a lookup table (S-Box) to achieve confusion.</p></div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center">
+                        <div class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold mr-3">2</div>
+                        <div><p class="text-xs font-bold">ShiftRows (Diffusion)</p><p class="text-[10px] text-slate-400 mt-0.5">Transposes bytes cyclically in rows 2, 3, and 4 to distribute columns influence.</p></div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center">
+                        <div class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold mr-3">3</div>
+                        <div><p class="text-xs font-bold">MixColumns (Diffusion)</p><p class="text-[10px] text-slate-400 mt-0.5">Linear matrix multiplication of state columns in GF(2^8) (omitted in final round).</p></div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center">
+                        <div class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold mr-3">4</div>
+                        <div><p class="text-xs font-bold">AddRoundKey</p><p class="text-[10px] text-slate-400 mt-0.5">Exclusive OR (XOR) operation applied to each column of the State matrix with the corresponding Round Key.</p></div>
+                    </div>
+                </div>
+
+                <!-- AES Visualizer Simulator -->
+                <div class="mt-8 p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm text-slate-800 dark:text-slate-100">
+                    <h3 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">Interactive AES Round Simulator</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Input 16-Char State Matrix String</label>
+                            <input id="aes-input-string" type="text" value="AESCRYPTOGRAPHY" maxlength="16" placeholder="Must be exactly 16 chars" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <!-- Matrix Grid -->
+                            <div class="flex-1 w-full max-w-xs">
+                                <div id="aes-grid" class="grid grid-cols-4 gap-2 border border-slate-200 dark:border-slate-800 p-3 rounded-lg bg-white dark:bg-slate-900">
+                                    <!-- Generated by JS -->
+                                </div>
+                            </div>
+                            
+                            <!-- Operator Panel -->
+                            <div class="flex-1 space-y-2 w-full">
+                                <span class="text-xs font-bold text-slate-400 block">Round Steps:</span>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="triggerAESSubBytes()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 px-3 rounded text-xs transition-colors">1. SubBytes</button>
+                                    <button onclick="triggerAESShiftRows()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-3 rounded text-xs transition-colors">2. ShiftRows</button>
+                                    <button onclick="triggerAESMixColumns()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded text-xs transition-colors">3. MixColumns</button>
+                                    <button onclick="triggerAESAddRoundKey()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-3 rounded text-xs transition-colors">4. AddRoundKey</button>
+                                </div>
+                                <button onclick="renderAESGrid(); document.getElementById('aes-log').innerHTML='State reset.';" class="w-full bg-slate-500 hover:bg-slate-600 text-white font-bold py-1.5 px-3 rounded text-[11px] transition-colors mt-2">Reset State Matrix</button>
+                            </div>
+                        </div>
+                        
+                        <div id="aes-log" class="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded text-xs leading-relaxed text-slate-500">
+                            State initialized with input string. Click operations above to simulate an AES round.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 5: Diffie-Hellman Key Exchange -->
+            <div id="diffie-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: Diffie-Hellman</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Definition (2) + Shared Secret Logic (3) + Numerical Example (5)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">Diffie-Hellman Key Exchange</h1>
+                <p class="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">Diffie-Hellman key exchange is an asymmetric method that permits two users to establish a shared secret key over an insecure communication channel using modular exponentiation math.</p>
+
+                <!-- Diffie-Hellman Calculator Widget -->
+                <div class="mt-8 p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm text-slate-800 dark:text-slate-100">
+                    <h3 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">Interactive Diffie-Hellman Key Exchanger</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Prime (p)</label>
+                                <input id="dh-p" type="number" value="23" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Generator (g)</label>
+                                <input id="dh-g" type="number" value="5" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Alice Private (a)</label>
+                                <input id="dh-a" type="number" value="6" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Bob Private (b)</label>
+                                <input id="dh-b" type="number" value="15" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <button onclick="runDiffieHellman()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded text-xs transition-colors">Exchange Keys</button>
+                        <div id="dh-output" class="mt-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 6: Shamir's Scheme -->
+            <div id="secret-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: Shamir's Scheme</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Threshold Concept (2) + Polynomial Logic (3) + Simple Numerical (5)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">Shamir's (k, n) Threshold Scheme</h1>
+                <p class="text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">A threshold scheme splits a sensitive secret into $n$ pieces (shares) in such a way that combining any threshold of $k$ shares recovers the secret, while any subset of size $k-1$ or less leaks absolute zero information.</p>
+
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4 mt-8 border-b border-slate-100 dark:border-slate-800 pb-2">The Polynomial Method</h3>
+                <div class="diagram-box p-4 rounded-xl">
+                    <p class="text-xs text-slate-500 mb-4"><b>Core Property:</b> Interpolation logic states that it takes exactly $k$ coordinates/points to uniquely resolve a polynomial of degree $k-1$.</p>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg text-center border border-slate-100 dark:border-slate-800">
+                        <span class="text-base font-mono">$$f(x) = S + a_1x + a_2x^2 + \dots + a_{k-1}x^{k-1}$$</span>
+                        <p class="text-xs text-slate-500 mt-2">Where the constant term <span class="font-bold text-blue-600 dark:text-blue-400">S (where x=0)</span> is the Secret.</p>
+                    </div>
+                </div>
+
+                <!-- Shamir Secret Sharing Widget -->
+                <div class="mt-8 p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm text-slate-800 dark:text-slate-100">
+                    <h3 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">Interactive Shamir Secret Sharing Engine</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Secret (S)</label>
+                                <input id="shamir-secret" type="number" value="42" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Threshold (k)</label>
+                                <input id="shamir-k" type="number" value="3" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Total Shares (n)</label>
+                                <input id="shamir-n" type="number" value="5" class="w-full text-xs p-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <button onclick="runShamirGenerator()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded text-xs transition-colors">Generate Shares</button>
+                        <div id="shamir-gen-output" class="mt-4"></div>
+                        <div id="shamir-recon-output" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 7: PKI & Forensics -->
+            <div id="pki-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">10-Mark Blueprint: PKI/Forensics</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">PKI Components (3) + Working Flow (2) + Forensics Process (5)</p>
+                </div>
+
+                <h1 class="text-3xl font-bold mb-6">Unit 5: Infrastructure & Forensics</h1>
+                
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">Public Key Infrastructure (PKI)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-slate-700 dark:text-slate-300">
+                    <div class="p-4 border border-slate-200 dark:border-slate-800 rounded-lg text-center bg-slate-50 dark:bg-slate-800 shadow-sm">
+                        <span class="text-2xl mb-1 block">🏛️</span>
+                        <b class="text-xs block">Certificate Authority (CA)</b>
+                        <span class="text-[9px] text-slate-400 block mt-1">Signs & Issues digital certificates binding public keys to verified identities.</span>
+                    </div>
+                    <div class="p-4 border border-slate-200 dark:border-slate-800 rounded-lg text-center bg-slate-50 dark:bg-slate-800 shadow-sm">
+                        <span class="text-2xl mb-1 block">🛂</span>
+                        <b class="text-xs block">Registration Authority (RA)</b>
+                        <span class="text-[9px] text-slate-400 block mt-1">Verifies the identity of entities requesting a certificate before the CA signs it.</span>
+                    </div>
+                    <div class="p-4 border border-slate-200 dark:border-slate-800 rounded-lg text-center bg-slate-50 dark:bg-slate-800 shadow-sm">
+                        <span class="text-2xl mb-1 block">📋</span>
+                        <b class="text-xs block">Certificate Revocation List (CRL)</b>
+                        <span class="text-[9px] text-slate-400 block mt-1">Maintains a signed public database of revoked, invalid, or compromised keys.</span>
+                    </div>
+                </div>
+
+                <!-- PKI Visualizer Flow -->
+                <div class="mt-8 p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 shadow-sm text-slate-800 dark:text-slate-100">
+                    <h3 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">Interactive PKI Certificate Flow Visualizer</h3>
+                    <div class="space-y-4">
+                        <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 min-h-[160px]">
+                            <!-- Alice Node -->
+                            <div id="pki-alice" class="pki-node p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-center w-24 text-xs font-semibold shadow-sm transition-all duration-300">
+                                👩‍💻<br>Alice<br><span class="text-[9px] text-slate-400 font-normal">Client</span>
+                            </div>
+                            <!-- Message Flow Box -->
+                            <div class="flex-1 text-center" id="pki-message-box">
+                                <!-- Populated by JS -->
+                            </div>
+                            <!-- CA Node -->
+                            <div id="pki-ca" class="pki-node p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-center w-24 text-xs font-semibold shadow-sm transition-all duration-300">
+                                🏛️<br>CA<br><span class="text-[9px] text-slate-400 font-normal">Issuer</span>
+                            </div>
+                            <!-- Server Node -->
+                            <div id="pki-server" class="pki-node p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-center w-24 text-xs font-semibold shadow-sm transition-all duration-300">
+                                🖥️<br>Server<br><span class="text-[9px] text-slate-400 font-normal">Host</span>
+                            </div>
+                            <!-- Bob Node -->
+                            <div id="pki-bob" class="pki-node p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-center w-24 text-xs font-semibold shadow-sm transition-all duration-300">
+                                👨‍💻<br>Bob<br><span class="text-[9px] text-slate-400 font-normal">Visitor</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-xs">
+                            <button onclick="prevPKIStep()" class="bg-slate-600 hover:bg-slate-700 text-white font-bold py-1.5 px-3 rounded transition-colors">&larr; Previous Step</button>
+                            <span id="pki-step-num" class="font-bold text-slate-500">Step 1 of 5</span>
+                            <button onclick="nextPKIStep()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded transition-colors">Next Step &rarr;</button>
+                        </div>
+                        
+                        <div id="pki-desc" class="p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded text-xs leading-relaxed text-slate-500">
+                            Alice generates a public/private key pair. She submits a Certificate Signing Request (CSR) with her identity and public key to the Certificate Authority (CA).
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4 mt-10 border-b border-slate-100 dark:border-slate-800 pb-2">The Forensic Process</h3>
+                <div class="space-y-4 text-slate-600 dark:text-slate-300">
+                    <div class="flex items-center"><span class="step-circle">1</span><span class="text-xs font-bold">Identification</span></div>
+                    <div class="flex items-center"><span class="step-circle">2</span><span class="text-xs font-bold">Preservation (Imaging and hash validation to prevent evidence change)</span></div>
+                    <div class="flex items-center"><span class="step-circle">3</span><span class="text-xs font-bold">Analysis (Recovery of deleted artifacts and timelines)</span></div>
+                    <div class="flex items-center"><span class="step-circle">4</span><span class="text-xs font-bold">Documentation & Presentation</span></div>
+                </div>
+            </div>
+
+            <!-- Unit 8: Quiz Selection -->
+            <div id="quiz-topic" class="topic-content hidden">
+                <div class="blueprint-card p-4 rounded-lg mb-8">
+                    <h2 class="text-blue-800 dark:text-blue-400 font-bold mb-1">AKTU HTCS401 Practice Quiz</h2>
+                    <p class="text-blue-700 dark:text-blue-300 text-xs">Test your concept mastery across all 5 syllabus units with immediate feedback and answers.</p>
+                </div>
+                
+                <h1 class="text-3xl font-bold mb-6">Interactive Exam Readiness Quiz</h1>
+                
+                <div id="quiz-section-container" class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 p-6 rounded-xl shadow-sm text-slate-800 dark:text-slate-100">
+                    <!-- Dynamic Quiz rendering -->
+                    <div id="quiz-question-box"></div>
+                    <div id="quiz-results-box" class="hidden"></div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div id="quiz-nav-controls" class="flex justify-between items-center mt-6 pt-4 border-t border-slate-200 dark:border-slate-850">
+                        <button id="quiz-prev-btn" onclick="quizPrev()" class="bg-slate-600 hover:bg-slate-700 disabled:opacity-40 text-white font-bold py-2 px-4 rounded text-xs transition-colors">
+                            &larr; Previous
+                        </button>
+                        <button id="quiz-next-btn" onclick="quizNext()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-xs transition-colors">
+                            Next &rarr;
+                        </button>
+                        <button id="quiz-submit-btn" onclick="submitQuiz()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-xs transition-colors hidden">
+                            Submit Answers
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer class="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 mt-12 py-8 transition-colors">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">HTCS401 Exam Readiness Tool • 2026</p>
+        </div>
+    </footer>
+
+    <!-- Load Project Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/calculators.js"></script>
+    <script src="js/visualizers.js"></script>
+    <script src="js/quiz.js"></script>
+</body>
+</html>

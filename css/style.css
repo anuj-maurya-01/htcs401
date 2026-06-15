@@ -1,0 +1,247 @@
+/* HTCS401 Custom Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+:root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #eff6ff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --accent-color: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-light: #dbeafe;
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --input-bg: #ffffff;
+    --success-bg: #f0fdf4;
+    --success-border: #bbf7d0;
+    --success-text: #166534;
+    --warning-bg: #fffbeb;
+    --warning-border: #fde68a;
+    --warning-text: #92400e;
+    --danger-bg: #fef2f2;
+    --danger-border: #fecaca;
+    --danger-text: #991b1b;
+}
+
+.dark {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1e293b;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #6b7280;
+    --border-color: #1f2937;
+    --accent-color: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-light: #1e3a8a;
+    --card-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --input-bg: #1f2937;
+    --success-bg: #062f17;
+    --success-border: #14532d;
+    --success-text: #4ade80;
+    --warning-bg: #451a03;
+    --warning-border: #78350f;
+    --warning-text: #fbbf24;
+    --danger-bg: #450a0a;
+    --danger-border: #7f1d1d;
+    --danger-text: #f87171;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* App Containers */
+.theme-bg-secondary { background-color: var(--bg-secondary); }
+.theme-bg-tertiary { background-color: var(--bg-tertiary); }
+.theme-text-primary { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-muted { color: var(--text-muted); }
+.theme-border { border-color: var(--border-color); }
+.theme-card-shadow { box-shadow: var(--card-shadow); }
+.theme-input {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Custom Math Styling */
+.math {
+    font-family: 'Fira Code', monospace;
+    background: var(--bg-primary);
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: var(--accent-color);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.blueprint-card {
+    border-left: 5px solid var(--accent-color);
+    background-color: var(--bg-tertiary);
+}
+
+.active-tab {
+    background-color: var(--accent-light);
+    color: var(--accent-color);
+    font-weight: 600;
+    border-left: 4px solid var(--accent-color);
+}
+
+.diagram-box {
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.step-circle {
+    width: 28px;
+    height: 28px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.step-circle:hover {
+    transform: scale(1.15);
+}
+
+/* Interactive elements */
+.interactive-card {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+}
+
+.interactive-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgb(0 0 0 / 0.1), 0 8px 8px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Calculator Grid Table */
+.calc-table th {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.calc-table td {
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Custom Alert Boxes */
+.alert-success {
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
+}
+.alert-warning {
+    background-color: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    color: var(--warning-text);
+}
+.alert-danger {
+    background-color: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: var(--danger-text);
+}
+
+/* Checkbox Style */
+.checklist-checkbox {
+    border-color: var(--border-color);
+    background-color: var(--input-bg);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.checklist-checkbox:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* AES Animation State */
+.aes-cell {
+    transition: background-color 0.4s ease, transform 0.4s ease;
+}
+
+.aes-cell.active-sub {
+    background-color: #f59e0b; /* Orange substitution */
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+.aes-cell.active-shift {
+    background-color: #3b82f6; /* Blue shift */
+    color: #ffffff;
+    transform: rotate(5deg);
+}
+
+.aes-cell.active-mix {
+    background-color: #10b981; /* Green mix */
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.aes-cell.active-key {
+    background-color: #8b5cf6; /* Purple XOR */
+    color: #ffffff;
+    transform: scale(0.95);
+}
+
+/* PKI Animate Flow Nodes */
+.pki-node {
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.pki-node.active-node {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-light);
+}
+
+/* MathJax custom container */
+.mathjax-overflow {
+    overflow-x: auto;
+    max-width: 100%;
+}
